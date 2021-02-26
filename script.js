@@ -1,43 +1,75 @@
-// function generateBarcode() {
-//     var barcodeValue = document.getElementById("barcodeValue").value;
-//     var barcodeType = document.getElementById("barcodeType").value;
-//     var showText = document.getElementById("showText").value;
-//     JsBarcode("#barcode", barcodeValue, {
-//         format: barcodeType,
-//         displayValue: showText,
-//         lineColor: "#24292e",
-//         width: 2,
-//         height: 40,
-//         fontSize: 20
-//     });
-// }
-// generateBarcode();
+function generateBarcode(barcodeValue,) {
 
-//milimeter to pixel
-const mm = 0.0377952756; 
-
-function generateGrid(row, col, height, width, space) {
-    const main = document.querySelector(".grid");
-    console.log(main);
-
-    for (let x = 0; x < row; x++) {
-        const row = document.createElement('div');
-        row.id = "row-" + x;
-        row.className = "row";
-     
-        for (let y = 0; y < col; y++) {
-            const col = document.createElement('div');
-            col.id = "col-" + y;
-            col.className = "col eti";
-            col.style.setProperty("height", Number(height / mm) + "px");
-            col.style.setProperty("width", Number(width / mm) + "px");
-            col.style.setProperty('margin', Number(space / mm) + "px")
-            const text  = document.createTextNode(col.id);
-            col.appendChild(text);
-            row.appendChild(col);
-        }
-        main.appendChild(row);
-    }
+    JsBarcode("#barcode", barcodeValue, {
+        format: 'CODE128',
+        displayValue: true,
+        lineColor: "#24292e",
+        width: 2,
+        height: 40,
+        fontSize: 20
+    });
 }
 
-generateGrid(4, 4, 16.93, 44.45, 0.2);
+const tbl_etiqueta = document.querySelector('table');
+const btn_print = document.querySelector('#print');
+
+btn_print.onclick = function () {
+    
+    const conteudo = document.querySelector('table').innerHTML;
+    const etiquetas = document.querySelectorAll('table input');
+    
+    etiquetas.forEach(element => {
+        generateBarcode(element.value);
+        const codeBar = conteudo.document.createElement('svg');
+        codeBar.id = "barcode";
+        element.parentNode.appendChild(codeBar);
+        element.parentNode.removeChild(element);
+
+    });
+
+    tela_impressao.document.write(conteudo);
+    tela_impressao.window.print();
+    tela_impressao.window.close();
+};
+
+var qtd = 1;
+
+function createTable() {
+    const tbl = document.querySelector('.tbl-etiqueta');
+    const row = document.querySelector('#inputRow').value;
+    const col = document.querySelector('#inputCol').value;
+
+    for (var r = 0; r < parseInt(row, 10); r++) {
+        var x = tbl.insertRow(r);
+        x.classList.add('eti-row');
+        for (var c = 0; c < parseInt(col, 10); c++) {
+            var y = x.insertCell(c);
+            y.innerHTML = '<input type="text" id="eti-' + qtd + '">';
+            qtd += 1;
+        }
+    }
+
+}
+
+
+var getHTML = function ( url, callback ) {
+
+	// Feature detection
+	if ( !window.XMLHttpRequest ) return;
+
+	// Create new request
+	var xhr = new XMLHttpRequest();
+
+	// Setup callback
+	xhr.onload = function() {
+		if ( callback && typeof( callback ) === 'function' ) {
+			callback( this.responseXML );
+		}
+	}
+
+	// Get the HTML
+	xhr.open( 'GET', url );
+	xhr.responseType = 'document';
+	xhr.send();
+
+};
